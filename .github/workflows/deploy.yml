@@ -42,5 +42,8 @@ jobs:
 
           # Optional: Tail logs from the Docker container
           exit
+      environment:
+          name: production
+
         EOF
 
