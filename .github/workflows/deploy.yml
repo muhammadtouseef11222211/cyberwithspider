@@ -41,6 +41,6 @@ jobs:
           docker run -d -p 80:4000 --name my-app-container my-app
 
           # Optional: Tail logs from the Docker container
-          docker logs -f my-app-container
+          exit
         EOF
 
