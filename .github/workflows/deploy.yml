@@ -20,25 +20,27 @@ jobs:
         echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
         chmod 400 ec2-key.pem
 
-    # Step 3: Deploy to EC2
-    - name: Deploy to EC2
+    # Step 3: Deploy to EC2 and run in Docker
+    - name: Deploy to EC2 and run Docker container
       run: |
         ssh -o StrictHostKeyChecking=no -i ec2-key.pem ${{ secrets.EC2_HOST }} << 'EOF'
-          # Stop any running Node.js processes to avoid conflicts
-          pkill node || true
+          # Stop any running Docker containers
+          docker ps -q | xargs -r docker stop || true
+          docker ps -aq | xargs -r docker rm || true
 
-          # Clean up old app directory, create a fresh one, and pull the latest code
+          # Pull the latest image or build a fresh Docker image
+          cd /home/ubuntu || true  # Navigate to the app directory or create one
           rm -rf app || true
-          mkdir app && cd app
-          git clone https://github.com/muhammadtouseef11222211/cyberwithspider.git .
+          git clone https://github.com/muhammadtouseef11222211/cyberwithspider.git app
+          cd app
 
-          # Install dependencies
-          npm install
+          # Build the Docker image
+          docker build -t my-app .
 
-          # Start the app in the background
-          nohup npm start &
+          # Run the app in a Docker container
+          docker run -d -p 80:4000 --name my-app-container my-app
 
-          # Optional: Tail the logs for real-time debugging
-          tail -f nohup.out
+          # Optional: Tail logs from the Docker container
+          docker logs -f my-app-container
         EOF
 

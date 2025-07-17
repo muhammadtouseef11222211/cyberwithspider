@@ -3,7 +3,7 @@ const app = express();
 const PORT = 4000;
 
 app.get('/', (req, res) => {
-  res.send('Code deployment using github action');
+  res.send('Code deployment in Docker test');
 });
 
 app.listen(PORT, () => {
