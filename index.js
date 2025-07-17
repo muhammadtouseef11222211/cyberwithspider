@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 
 app.get('/', (req, res) => {
-  res.send('Hello from Github Actions now');
+  res.send('Code deployment using github action');
 });
 
 app.listen(PORT, () => {
