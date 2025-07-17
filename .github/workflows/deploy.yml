@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: production  # Define the environment at the job level
 
     steps:
       # Step 1: Checkout the code from the repository
@@ -41,7 +43,6 @@ jobs:
             docker run -d -p 80:4000 --name my-app-container my-app
 
             # Optional: Tail logs from the Docker container
+            tail -f /var/log/docker.log
           EOF
-        environment:
-          name: production
 
