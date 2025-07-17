@@ -10,40 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code from the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 2: Set up SSH
-    - name: Set up SSH
-      run: |
-        echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
-        chmod 400 ec2-key.pem
+      # Step 2: Set up SSH
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
+          chmod 400 ec2-key.pem
 
-    # Step 3: Deploy to EC2 and run in Docker
-    - name: Deploy to EC2 and run Docker container
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ec2-key.pem ${{ secrets.EC2_HOST }} << 'EOF'
-          # Stop any running Docker containers
-          docker ps -q | xargs -r docker stop || true
-          docker ps -aq | xargs -r docker rm || true
+      # Step 3: Deploy to EC2 and run Docker container
+      - name: Deploy to EC2 and run Docker container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ec2-key.pem ${{ secrets.EC2_HOST }} << 'EOF'
+            # Stop any running Docker containers
+            docker ps -q | xargs -r docker stop || true
+            docker ps -aq | xargs -r docker rm || true
 
-          # Pull the latest image or build a fresh Docker image
-          cd /home/ubuntu || true  # Navigate to the app directory or create one
-          rm -rf app || true
-          git clone https://github.com/muhammadtouseef11222211/cyberwithspider.git app
-          cd app
+            # Pull the latest image or build a fresh Docker image
+            cd /home/ubuntu || true  # Navigate to the app directory or create one
+            rm -rf app || true
+            git clone https://github.com/muhammadtouseef11222211/cyberwithspider.git app
+            cd app
 
-          # Build the Docker image
-          docker build -t my-app .
+            # Build the Docker image
+            docker build -t my-app .
 
-          # Run the app in a Docker container
-          docker run -d -p 80:4000 --name my-app-container my-app
+            # Run the app in a Docker container
+            docker run -d -p 80:4000 --name my-app-container my-app
 
-          # Optional: Tail logs from the Docker container
-          exit
-      environment:
+            # Optional: Tail logs from the Docker container
+          EOF
+        environment:
           name: production
-
-        EOF
 
