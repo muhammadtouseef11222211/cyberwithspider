@@ -1,0 +1,44 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up SSH
+    - name: Set up SSH
+      run: |
+        echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
+        chmod 400 ec2-key.pem
+
+    # Step 3: Deploy to EC2
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ec2-key.pem ${{ secrets.EC2_HOST }} << 'EOF'
+          # Stop any running Node.js processes to avoid conflicts
+          pkill node || true
+
+          # Clean up old app directory, create a fresh one, and pull the latest code
+          rm -rf app || true
+          mkdir app && cd app
+          git clone https://github.com/muhammadtouseef11222211/cyberwithspider.git .
+
+          # Install dependencies
+          npm install
+
+          # Start the app in the background
+          nohup npm start &
+
+          # Optional: Tail the logs for real-time debugging
+          tail -f nohup.out
+        EOF
+
