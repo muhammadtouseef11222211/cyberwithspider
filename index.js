@@ -3,7 +3,7 @@ const app = express();
 const PORT = 4000;
 
 app.get('/', (req, res) => {
-  res.send('It will not run until owner give deploy permission');
+  res.send('Jenkins pipeline is working for nodejs');
 });
 
 app.listen(PORT, () => {
