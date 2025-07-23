@@ -3,7 +3,7 @@ const app = express();
 const PORT = 4000;
 
 app.get('/', (req, res) => {
-  res.send('Jenkins pipeline is working for nodejs');
+  res.send('deploy test with script and jenkins');
 });
 
 app.listen(PORT, () => {
